@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bikini Bottom Movie Checklist</title>
+  <style>
+    :root{
+      --sea:#0b5aa6;
+      --deep:#06345f;
+      --sand:#f7d06b;
+      --coral:#ff6b6b;
+      --kelp:#2ecc71;
+      --ink:#102a43;
+      --card:rgba(255,255,255,.92);
+      --shadow: 0 18px 40px rgba(0,0,0,.18);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(0,255,255,.18), transparent 60%),
+        radial-gradient(900px 450px at 80% 15%, rgba(255,255,255,.14), transparent 55%),
+        linear-gradient(180deg, var(--sea), var(--deep));
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* Bubble layer */
+    .bubbles{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.55;
+      filter: blur(.2px);
+    }
+    .bubble{
+      position:absolute;
+      border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.12) 55%, rgba(255,255,255,0) 70%);
+      border: 1px solid rgba(255,255,255,.18);
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(20vh) translateX(0); opacity:0}
+      10%{opacity:1}
+      to{ transform: translateY(-120vh) translateX(18px); opacity:0}
+    }
+
+    header{
+      padding: 40px 18px 20px;
+      display:flex;
+      justify-content:center;
+    }
+    .hero{
+      width:min(980px, 100%);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 24px rgba(0,0,0,.2);
+      backdrop-filter: blur(8px);
+      padding: 18px 18px 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute; inset:-60px -40px auto auto;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle at 35% 35%, rgba(247,208,107,.9), rgba(247,208,107,.15) 60%, transparent 70%);
+      border-radius:999px;
+      transform: rotate(12deg);
+    }
+    .topline{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      position:relative;
+      z-index:1;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo{
+      width:52px; height:52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--sand), #fff3b0);
+      display:grid; place-items:center;
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+    }
+    .logo svg{width:34px; height:34px}
+    h1{
+      font-size: clamp(20px, 3vw, 28px);
+      margin:0;
+      color:white;
+      letter-spacing:.3px;
+      text-shadow: 0 2px 8px rgba(0,0,0,.28);
+    }
+    .subtitle{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.88);
+      font-size: 14px;
+      line-height:1.35;
+      max-width: 62ch;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 650;
+      cursor:pointer;
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+      transition: transform .08s ease, filter .08s ease;
+    }
+    button:active{ transform: translateY(1px) scale(.99); filter:brightness(.98) }
+    button.secondary{
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.22);
+      color: white;
+      box-shadow:none;
+    }
+    button.secondary:hover{ background: rgba(255,255,255,.22) }
+    .wrap{
+      padding: 0 18px 46px;
+      display:flex;
+      justify-content:center;
+    }
+    .grid{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+    }
+    @media (max-width: 920px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(16,42,67,.10);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:
+        linear-gradient(90deg, rgba(247,208,107,.45), rgba(255,255,255,0));
+      border-bottom: 1px solid rgba(16,42,67,.08);
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.2px;
+    }
+    .badge{
+      font-size:12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(6,52,95,.08);
+      color: rgba(6,52,95,.86);
+      font-weight: 650;
+      white-space:nowrap;
+    }
+    .list{
+      padding: 12px 12px 8px;
+    }
+    .item{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      transition: background .12s ease;
+      cursor:pointer;
+    }
+    .item:hover{ background: rgba(6,52,95,.05) }
+    input[type="checkbox"]{
+      width: 20px; height: 20px;
+      margin-top: 2px;
+      accent-color: var(--kelp);
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+    .meta{
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .titleRow{
+      display:flex;
+      gap:10px;
+      align-items:baseline;
+      flex-wrap:wrap;
+    }
+    .movieTitle{
+      font-weight: 780;
+      font-size: 14.5px;
+    }
+    .year{
+      font-size: 12.5px;
+      color: rgba(16,42,67,.70);
+      font-weight: 650;
+    }
+    .note{
+      margin-top: 4px;
+      font-size: 12.5px;
+      color: rgba(16,42,67,.72);
+      line-height: 1.35;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255,107,107,.12);
+      color: rgba(179,33,33,.92);
+    }
+    .pill.streaming{ background: rgba(46,204,113,.13); color: rgba(13,120,55,.92) }
+    .pill.theatrical{ background: rgba(247,208,107,.20); color: rgba(122,84,0,.92) }
+
+    .side{
+      display:grid;
+      gap:16px;
+      align-content:start;
+    }
+    .progressBox{
+      padding: 14px 16px 16px;
+    }
+    .progressTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .progressTop strong{ font-size: 14px; }
+    .progressTop span{ font-size: 12.5px; color: rgba(16,42,67,.70); font-weight: 650; }
+    .bar{
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(6,52,95,.10);
+      overflow:hidden;
+      border: 1px solid rgba(6,52,95,.10);
+    }
+    .bar > i{
+      display:block;
+      height:100%;
+      width:0%;
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, var(--kelp), #7bed9f);
+      transition: width .2s ease;
+    }
+    .goofy{
+      margin-top: 12px;
+      font-size: 13px;
+      line-height:1.35;
+      color: rgba(16,42,67,.78);
+      background: rgba(247,208,107,.26);
+      border: 1px solid rgba(122,84,0,.12);
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+    textarea{
+      width:100%;
+      min-height: 160px;
+      border-radius: 14px;
+      border: 1px solid rgba(16,42,67,.14);
+      padding: 10px 12px;
+      font: inherit;
+      resize: vertical;
+      background: rgba(255,255,255,.85);
+      outline: none;
+    }
+    textarea:focus{ border-color: rgba(46,204,113,.55); box-shadow: 0 0 0 3px rgba(46,204,113,.15); }
+    .small{
+      font-size: 12.5px;
+      color: rgba(16,42,67,.72);
+      margin-top: 8px;
+      line-height: 1.35;
+    }
+    footer{
+      text-align:center;
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+      padding: 18px 12px 28px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating bubbles -->
+  <div class="bubbles" aria-hidden="true" id="bubbles"></div>
+
+  <header>
+    <div class="hero">
+      <div class="topline">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <!-- Original cute "sea sponge" icon (no copyrighted images) -->
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="M18 54c-4 0-7-3-7-7V21c0-5 4-9 9-9h24c5 0 9 4 9 9v26c0 4-3 7-7 7H18Z" fill="#FFD25A"/>
+              <path d="M22 20c2-4 8-5 10-1 1 2 0 4-1 6-2 3-4 5-2 8 2 4 7 2 10 0 4-3 8-1 9 2" stroke="#B27A00" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="22" cy="39" r="3.6" fill="#B27A00" opacity=".35"/>
+              <circle cx="39" cy="44" r="4.2" fill="#B27A00" opacity=".28"/>
+              <circle cx="35" cy="26" r="2.8" fill="#B27A00" opacity=".32"/>
+              <circle cx="26" cy="28" r="1.8" fill="#B27A00" opacity=".28"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Bikini Bottom Movie Checklist</h1>
+            <p class="subtitle">
+              Check off the films as you watch. Progress saves automatically (like a secret Krabby Patty recipe… but legal).
+            </p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="secondary" id="checkAllBtn" type="button">Check all</button>
+          <button class="secondary" id="uncheckAllBtn" type="button">Uncheck all</button>
+          <button id="resetBtn" type="button">Reset + clean slate</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- Checklist -->
+      <section class="card" aria-label="Movie checklist">
+        <div class="cardHeader">
+          <h2>Movies (release order)</h2>
+          <div class="badge" id="countBadge">0 / 6 watched</div>
+        </div>
+
+        <div class="list" id="movieList">
+          <!-- Items injected by JS -->
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="side">
+        <section class="card" aria-label="Progress">
+          <div class="cardHeader">
+            <h2>Progress</h2>
+            <div class="badge" id="pctBadge">0%</div>
+          </div>
+          <div class="progressBox">
+            <div class="progressTop">
+              <strong id="progressLine">0 of 6 checked</strong>
+              <span id="statusLine">Status: still in the Goo Lagoon</span>
+            </div>
+            <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+            <div class="goofy" id="goofyLine">Tip: Hydrate. Laugh. Repeat. 🫧</div>
+          </div>
+        </section>
+
+        <section class="card" aria-label="Notes">
+          <div class="cardHeader">
+            <h2>Notes (your “Patrick memory bank”)</h2>
+            <div class="badge">Auto-saves</div>
+          </div>
+          <div class="progressBox">
+            <textarea id="notes" placeholder="Favorite moments, best quotes, who stole the show, etc..."></textarea>
+            <div class="small">
+              Saved locally in your browser (no account, no cloud, no Plankton spying… probably).
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    Made with bubbles & questionable nautical decisions. 🐌🫧
+  </footer>
+
+  <script>
+    // --- Data ---
+    const movies = [
+      {
+        id: "m2004",
+        title: "The SpongeBob SquarePants Movie",
+        year: 2004,
+        tag: "Theatrical",
+        tagClass: "theatrical",
+        note: "The original big-screen quest (Shell City, crown drama, legendary vibes)."
+      },
+      {
+        id: "m2015",
+        title: "The SpongeBob Movie: Sponge Out of Water",
+        year: 2015,
+        tag: "Theatrical",
+        tagClass: "theatrical",
+        note: "Surface-level chaos (literally). Comic-book hero energy."
+      },
+      {
+        id: "m2020",
+        title: "The SpongeBob Movie: Sponge on the Run",
+        year: 2020,
+        tag: "Paramount+ / Stream",
+        tagClass: "streaming",
+        note: "Operation: Find Gary. Prepare emotional support tissues."
+      },
+      {
+        id: "m2024",
+        title: "Saving Bikini Bottom: The Sandy Cheeks Movie",
+        year: 2024,
+        tag: "Spin-off",
+        tagClass: "streaming",
+        note: "Sandy takes the spotlight. Science, karate, and saving the day."
+      },
+      {
+        id: "m2025p",
+        title: "Plankton: The Movie",
+        year: 2025,
+        tag: "Spin-off",
+        tagClass: "streaming",
+        note: "Tiny villain, big plans. Expect maximum scheming."
+      },
+      {
+        id: "m2025s",
+        title: "The SpongeBob Movie: Search for SquarePants",
+        year: 2025,
+        tag: "Theatrical",
+        tagClass: "theatrical",
+        note: "Newest adventure. Charted course: ??? (but definitely nautical)."
+      }
+    ];
+
+    const STORAGE_KEY = "bb_movie_checklist_v1";
+    const NOTES_KEY = "bb_movie_notes_v1";
+
+    // --- Helpers ---
+    function loadState(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      }catch(e){
+        return {};
+      }
+    }
+    function saveState(state){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    // --- Render ---
+    const listEl = document.getElementById("movieList");
+    const countBadge = document.getElementById("countBadge");
+    const pctBadge = document.getElementById("pctBadge");
+    const progressLine = document.getElementById("progressLine");
+    const statusLine = document.getElementById("statusLine");
+    const goofyLine = document.getElementById("goofyLine");
+    const barFill = document.getElementById("barFill");
+
+    let state = loadState();
+
+    function render(){
+      listEl.innerHTML = "";
+      movies.forEach(m => {
+        const checked = !!state[m.id];
+
+        const row = document.createElement("label");
+        row.className = "item";
+        row.setAttribute("for", m.id);
+
+        row.innerHTML = `
+          <input type="checkbox" id="${m.id}" ${checked ? "checked" : ""} />
+          <div class="meta">
+            <div class="titleRow">
+              <div class="movieTitle">${m.title}</div>
+              <div class="year">(${m.year})</div>
+              <span class="pill ${m.tagClass}">${m.tag}</span>
+            </div>
+            <div class="note">${m.note}</div>
+          </div>
+        `;
+
+        listEl.appendChild(row);
+
+        const cb = row.querySelector("input[type='checkbox']");
+        cb.addEventListener("change", () => {
+          state[m.id] = cb.checked;
+          saveState(state);
+          updateProgress();
+        });
+      });
+
+      updateProgress();
+    }
+
+    function updateProgress(){
+      const total = movies.length;
+      const done = movies.reduce((acc, m) => acc + (state[m.id] ? 1 : 0), 0);
+      const pct = total ? Math.round((done/total)*100) : 0;
+
+      countBadge.textContent = `${done} / ${total} watched`;
+      pctBadge.textContent = `${pct}%`;
+      progressLine.textContent = `${done} of ${total} checked`;
+      barFill.style.width = clamp(pct, 0, 100) + "%";
+
+      // Fun status messages
+      const statuses = [
+        { min: 0,  max: 0,  status: "Status: still in the Goo Lagoon", tip: "Tip: Start with 2004 for peak nostalgia." },
+        { min: 1,  max: 2,  status: "Status: cruising near Jellyfish Fields", tip: "Tip: Snacks improve cinematic performance by 12% (science)." },
+        { min: 3,  max: 4,  status: "Status: mid-marathon, captain energy rising", tip: "Tip: Stretch break! Your spine is not a sea cucumber." },
+        { min: 5,  max: 5,  status: "Status: one movie away from Neptune-tier", tip: "Tip: Save the last one for a dramatic finale." },
+        { min: 6,  max: 6,  status: "Status: you are officially a Certified Bikini Bottom Scholar", tip: "Tip: Reward yourself with something absurdly crunchy." }
+      ];
+
+      const match = statuses.find(s => done >= s.min && done <= s.max) || statuses[0];
+      statusLine.textContent = match.status;
+      goofyLine.textContent = match.tip + " 🫧";
+    }
+
+    // --- Notes ---
+    const notesEl = document.getElementById("notes");
+    notesEl.value = localStorage.getItem(NOTES_KEY) || "";
+    notesEl.addEventListener("input", () => {
+      localStorage.setItem(NOTES_KEY, notesEl.value);
+    });
+
+    // --- Buttons ---
+    document.getElementById("checkAllBtn").addEventListener("click", () => {
+      movies.forEach(m => state[m.id] = true);
+      saveState(state);
+      render();
+    });
+
+    document.getElementById("uncheckAllBtn").addEventListener("click", () => {
+      movies.forEach(m => state[m.id] = false);
+      saveState(state);
+      render();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if(confirm("Reset everything? This will uncheck all movies and clear notes.")){
+        state = {};
+        saveState(state);
+        localStorage.removeItem(NOTES_KEY);
+        notesEl.value = "";
+        render();
+      }
+    });
+
+    // --- Bubbles generator ---
+    const bubblesEl = document.getElementById("bubbles");
+    const bubbleCount = 22;
+    for(let i=0;i<bubbleCount;i++){
+      const b = document.createElement("div");
+      b.className = "bubble";
+      const size = 14 + Math.random()*44; // px
+      b.style.width = size + "px";
+      b.style.height = size + "px";
+      b.style.left = (Math.random()*100) + "vw";
+      b.style.top = (60 + Math.random()*80) + "vh";
+      b.style.animationDuration = (8 + Math.random()*14) + "s";
+      b.style.animationDelay = (-Math.random()*12) + "s";
+      bubblesEl.appendChild(b);
+    }
+
+    // Kick off
+    render();
+  </script>
+</body>
+</html>
